@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,8 @@ public class MenuOption : MonoBehaviour
     public string OptionName { get { return _optionName; } set { _optionName = value; } }
     [SerializeField] private Sprite _optionSprite;
     public Sprite OptionSprite { get { return _optionSprite; } set { _optionSprite = value; } }
-    [SerializeField] private UnityEvent _optionEvent;
-    public UnityEvent OptionEvent { get { return _optionEvent; } }
+
+    public EventHandler OnMenuAction;
 
     public override bool Equals(object obj)
     {

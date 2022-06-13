@@ -19,6 +19,8 @@ public class BasicMenu : MonoBehaviour
 
     [SerializeField]  private int _currentPosition;
 
+    [SerializeField] private string _currentOptionName;
+
     [SerializeField] private bool _isVisible;
     public bool IsVisible { get { return _isVisible; } set { _isVisible = value; } }
     [SerializeField] private string _menuName;
@@ -30,16 +32,17 @@ public class BasicMenu : MonoBehaviour
     public Sprite Cursor { get { return _cursor; } }
 
     private PlayerInput _playerInput;
+    private MenuOption _currentOption;
 
 
     public void Awake()
     {
         _currentPosition = 0;
+        UpdateMenuStats();
     }
 
     public void Start()
     {
-        _currentPosition = 0;
         /*GameObject temp = new GameObject("Test Option");
         temp.AddComponent<SpriteRenderer>();
         MenuOption test = temp.AddComponent<MenuOption>();
@@ -56,9 +59,20 @@ public class BasicMenu : MonoBehaviour
         _playerInput.actions["Select"].started += SelectOption;
     }
 
-    public void Testing(string test)
+    private void UpdateMenuStats()
     {
-        Debug.Log(test);
+        if (transform.childCount > 0)
+        {
+            _currentOption = transform.GetChild(_currentPosition).GetComponent<MenuOption>();
+        }
+        if (_currentOption != null)
+        {
+            _currentOptionName = _currentOption.OptionName;
+        }
+        else
+        {
+            _currentOptionName = "No Option Highlighted!";
+        }
     }
 
     public void AppendOption(GameObject optionToBeAdded)
@@ -101,11 +115,6 @@ public class BasicMenu : MonoBehaviour
         }
 
         MenuOption option = transform.GetChild(index).GetComponent<MenuOption>();
-        if(option == null)
-        {
-            Debug.LogError("This option does not have a Menu Option component!");
-            return;
-        }
 
         if (!option.OptionName.Equals(optionName)) {
             Debug.LogError("The Menu Option trying to be removed does not exist! (incorrect" +
@@ -119,11 +128,14 @@ public class BasicMenu : MonoBehaviour
 
     public virtual void SelectOption(InputAction.CallbackContext context)
     {
-        if (transform.childCount > 0 && transform.GetChild(_currentPosition) != null)
+        if(transform.childCount == 0)
+        {
+            Debug.LogError("This menu has no options in it!");
+        }
+        else if (transform.childCount > 0 && _currentOption != null)
         {
             Debug.Log("Selected");
-            MenuOption option = transform.GetChild(_currentPosition).GetComponent<MenuOption>();
-            option.OptionEvent.Invoke();
+            
         }
     }
 
@@ -155,6 +167,7 @@ public class BasicMenu : MonoBehaviour
                     }
                     break;
             }
-        }   
+        }
+        UpdateMenuStats();
     }
 }
