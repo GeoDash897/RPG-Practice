@@ -11,7 +11,7 @@ public class MenuOption : MonoBehaviour
     [SerializeField] private Sprite _optionSprite;
     public Sprite OptionSprite { get { return _optionSprite; } set { _optionSprite = value; } }
 
-    public EventHandler OnMenuAction;
+    [SerializeField] public UnityEvent OnMenuAction;
 
     public override bool Equals(object obj)
     {

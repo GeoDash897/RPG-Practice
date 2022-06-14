@@ -1,5 +1,5 @@
 {
-    "name": "PlayerInput",
+    "name": "Player Controls",
     "maps": [
         {
             "name": "UI",
@@ -20,7 +20,7 @@
                     "id": "235bc60d-e16a-47fc-a19f-3b5873f15b8e",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Tap",
                     "initialStateCheck": false
                 }
             ],

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BasicMenu : MonoBehaviour
+public class MenuManager : MonoBehaviour
 {
     public enum MenuType
     {
@@ -17,23 +17,20 @@ public class BasicMenu : MonoBehaviour
     the behaviors given to the properties in question
     Check out: https://gamedev.stackexchange.com/questions/194623/why-doesnt-unity-use-properties-from-c-scripts-instead-of-fields */
 
-    [SerializeField]  private int _currentPosition;
+    [SerializeField] private PlayerInput _playerInput;
+    public PlayerInput PlayerInputProp{ get { return _playerInput; } }
 
-    [SerializeField] private string _currentOptionName;
-
-    [SerializeField] private bool _isVisible;
-    public bool IsVisible { get { return _isVisible; } set { _isVisible = value; } }
     [SerializeField] private string _menuName;
     public string MenuName { get { return _menuName; } }
     [SerializeField] private MenuType _menuType;
     public MenuType TypeOfMenu { get { return _menuType; } }
 
-    [SerializeField] private Sprite _cursor;
-    public Sprite Cursor { get { return _cursor; } }
+    [SerializeField]  private int _currentPosition;
 
-    private PlayerInput _playerInput;
+    [SerializeField] private string _currentOptionName;
+
     private MenuOption _currentOption;
-
+    public MenuOption CurrentOption { get { return _currentOption; } }
 
     public void Awake()
     {
@@ -41,22 +38,17 @@ public class BasicMenu : MonoBehaviour
         UpdateMenuStats();
     }
 
-    public void Start()
+    private void OnEnable()
     {
-        /*GameObject temp = new GameObject("Test Option");
-        temp.AddComponent<SpriteRenderer>();
-        MenuOption test = temp.AddComponent<MenuOption>();
-        test.OptionName = "Test";
-        test.OptionSprite = transform.GetChild(0).GetComponent<MenuOption>().OptionSprite;
-        AppendOption(temp);*/
-        _playerInput = GameObject.Find("Player Input").GetComponent<PlayerInput>();
-        /* This would normally go in the OnEnable() method, but I put it in Start() as this class relies
-         * on Player Input from another GameObject
-         */
         _playerInput.actions["Move"].Enable();
         _playerInput.actions["Select"].Enable();
         _playerInput.actions["Move"].started += MoveInMenu;
         _playerInput.actions["Select"].started += SelectOption;
+    }
+
+    public void Test(string test)
+    {
+        Debug.Log(test);
     }
 
     private void UpdateMenuStats()
@@ -135,7 +127,7 @@ public class BasicMenu : MonoBehaviour
         else if (transform.childCount > 0 && _currentOption != null)
         {
             Debug.Log("Selected");
-            
+            _currentOption.OnMenuAction.Invoke();
         }
     }
 
@@ -147,6 +139,16 @@ public class BasicMenu : MonoBehaviour
             switch (input.y)
             {
                 case -1:
+                    if (_currentPosition == transform.childCount - 1) 
+                    {
+                        _currentPosition = 0;
+                    }
+                    else
+                    {
+                        _currentPosition++;
+                    }
+                    break;
+                case 1:
                     if (_currentPosition == 0)
                     {
                         _currentPosition = transform.childCount - 1;
@@ -156,18 +158,16 @@ public class BasicMenu : MonoBehaviour
                         _currentPosition--;
                     }
                     break;
-                case 1:
-                    if (_currentPosition == transform.childCount - 1)
-                    {
-                        _currentPosition = 0;
-                    }
-                    else
-                    {
-                        _currentPosition++;
-                    }
-                    break;
             }
         }
         UpdateMenuStats();
+    }
+
+    public void OnDisable()
+    {
+        _playerInput.actions["Move"].started -= MoveInMenu;
+        _playerInput.actions["Select"].started -= SelectOption;
+        _playerInput.actions["Move"].Disable();
+        _playerInput.actions["Select"].Disable();
     }
 }
